@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USER = credentials('dockerhub-username') // أسم المستخدم في DockerHub
-        DOCKER_PASS = credentials('dockerhub-password') // كلمة السر
+        DOCKERHUB_CREDENTIALS= credentials('dockerhub')
         BACKEND_IMAGE = "yahyaguizani/minikubeimages:heart-backend"
         FRONTEND_IMAGE = "yahyaguizani/minikubeimages:heart-frontend"
         KUBE_CONTEXT = "minikube"
@@ -39,7 +38,7 @@ pipeline {
         stage('Push Docker Images') {
             steps {
                 script {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --pasword-stdin'
                     sh 'docker push $BACKEND_IMAGE'
                     sh 'docker push $FRONTEND_IMAGE'
                 }
