@@ -2,9 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS= credentials('dockerhub')
-        BACKEND_IMAGE = "yahyaguizani/minikubeimages:heart-backend"
-        FRONTEND_IMAGE = "yahyaguizani/minikubeimages:heart-frontend"
         KUBE_CONTEXT = "minikube"
     }
 
@@ -13,35 +10,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/yahyaguizani/minikubetest.git'
-            }
-        }
-
-        stage('Build Docker Images') {
-            parallel {
-                stage('Build Backend') {
-                    steps {
-                        script {
-                            sh 'docker build -t $BACKEND_IMAGE ./backend'
-                        }
-                    }
-                }
-                stage('Build Frontend') {
-                    steps {
-                        script {
-                            sh 'docker build -t $FRONTEND_IMAGE ./frontend'
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Push Docker Images') {
-            steps {
-                script {
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --pasword-stdin'
-                    sh 'docker push $BACKEND_IMAGE'
-                    sh 'docker push $FRONTEND_IMAGE'
-                }
             }
         }
 
@@ -73,7 +41,6 @@ pipeline {
         }
         failure {
             echo 'Deployment failed!'
-            // ممكن تضيف Slack notification أو Email هنا
         }
     }
 }
